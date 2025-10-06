@@ -30,7 +30,7 @@ cp -r "$SOURCE" "$BACKUP_PATH"
 
 if [ $? -eq 0 ]
 then
-    echo "✅ Backup created successfully at: $BACKUP_PATH"
+    echo "Backup created successfully at: $BACKUP_PATH"
 else
-    echo "❌ Backup failed!"
+    echo " Backup failed!"
 fi
