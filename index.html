@@ -1,97 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UNIX Backup Utility</title>
-  <style>
+<meta charset="UTF-8">
+<title>UNIX Backup Utility</title>
+<style>
     body {
-      font-family: "Courier New", monospace;
-      background-color: #0e0e0e;
-      color: #e0e0e0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 20px;
+        font-family: Arial, sans-serif;
+        background: #f7f7f7;
+        padding: 20px;
+    }
+    .container {
+        max-width: 850px;
+        margin: auto;
+        background: #fff;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.15);
     }
     h1 {
-      color: #00ff99;
-      margin-bottom: 20px;
-      text-align: center;
+        text-align: center;
+        color: #222;
+        margin-bottom: 10px;
+    }
+    h2 {
+        color: #444;
+        margin-top: 20px;
     }
     pre {
-      background-color: #1e1e1e;
-      padding: 20px;
-      border-radius: 10px;
-      overflow-x: auto;
-      max-width: 90%;
-      box-shadow: 0 0 10px rgba(0, 255, 153, 0.2);
+        background: #1b1b1b;
+        color: #00ff00;
+        padding: 15px;
+        border-radius: 8px;
+        font-size: 13px;
+        white-space: pre-wrap;
+        overflow-x: auto;
     }
-    button {
-      margin-top: 15px;
-      padding: 10px 20px;
-      background-color: #00ff99;
-      border: none;
-      border-radius: 5px;
-      color: #000;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.3s;
+    button.copy {
+        background: #008cff;
+        color: white;
+        padding: 8px 18px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-top: 10px;
+        font-size: 15px;
     }
-    button:hover {
-      background-color: #00cc7a;
+    button.copy:hover {
+        background: #005ec2;
     }
-    footer {
-      margin-top: 25px;
-      font-size: 14px;
-      color: #888;
+    .info-box {
+        background: #e7f3ff;
+        border-left: 5px solid #007bff;
+        padding: 10px 15px;
+        border-radius: 5px;
+        margin-bottom: 15px;
     }
-  </style>
+</style>
 </head>
 <body>
 
-  <h1>UNIX Backup Utility Script</h1>
+<div class="container">
+<h1>UNIX Backup Utility Project</h1>
 
-  <pre id="code">
+<div class="info-box">
+This shell script allows users to create automatic backups of their folders with timestamps.  
+It includes options to view, delete, and manage backups from a menu-based interface.
+</div>
+
+<h2>📌 Features</h2>
+<ul>
+<li>Create backup directory</li>
+<li>Backup any folder with timestamp</li>
+<li>View available backups</li>
+<li>Delete selected backup</li>
+<li>Exit program</li>
+</ul>
+
+<h2>📂 Shell Script</h2>
+
+<button class="copy" onclick="copyCode()">Copy Script</button>
+
+<pre id="scriptBox">
 #!/bin/bash
-if [ -z "$1" ]; then
-    echo "Usage: $0 <source_path>"
-    exit 1
-fi
-SOURCE=$1
-BACKUP_DIR="/backup"
-if [ ! -d "$BACKUP_DIR" ]; then
-    sudo mkdir -p "$BACKUP_DIR"
-    sudo chmod 755 "$BACKUP_DIR"
-fi
-DATE=$(date +'%d-%m-%Y')
-NAME=$(basename "$SOURCE")
-DEST="$BACKUP_DIR/${NAME}-${DATE}"
-if [ -d "$SOURCE" ]; then
-    cp -r "$SOURCE" "$DEST"
-elif [ -f "$SOURCE" ]; then
-    mkdir -p "$DEST"
-    cp "$SOURCE" "$DEST/"
+
+while true
+do
+echo "===== Backup Utility ====="
+echo "1) Create backup directory"
+echo "2) Take backup of folder"
+echo "3) View backups"
+echo "4) Delete backup"
+echo "5) Exit"
+echo -n "Enter your choice: "
+read ch
+
+case $ch in
+1)
+echo -n "Enter backup folder name: "
+read backup_dir
+mkdir -p "$backup_dir"
+echo "Backup folder '$backup_dir' created successfully!"
+;;
+2)
+echo -n "Enter source directory to backup: "
+read src
+if [ -d "$src" ]; then
+    timestamp=$(date +"%d-%m-%Y_%H-%M-%S")
+    dest="backup-$timestamp"
+    mkdir -p "$dest"
+    cp -r "$src" "$dest"
+    echo "Backup created: $dest"
 else
-    echo "Error: $SOURCE does not exist."
-    exit 1
+    echo "Directory does not exist!"
 fi
-echo "✅ Backup of '$SOURCE' created successfully at: $DEST"
-  </pre>
+;;
+3)
+echo "Available Backups:"
+ls | grep "backup-" 2>/dev/null || echo "No backups found"
+;;
+4)
+echo -n "Enter backup folder name to delete: "
+read dname
+if [ -d "$dname" ]; then
+    rm -r "$dname"
+    echo "Backup '$dname' deleted!"
+else
+    echo "Backup folder does not exist!"
+fi
+;;
+5)
+echo "Exiting..."
+exit;;
+*)
+echo "Invalid option!"
+;;
+esac
+done
+</pre>
 
-  <button onclick="copyCode()">Copy Code</button>
+<script>
+function copyCode() {
+    var code = document.getElementById("scriptBox").innerText;
+    navigator.clipboard.writeText(code);
+    alert("✅ Script copied to clipboard!");
+}
+</script>
 
-  <footer>Created by Mannat | UNIX Project</footer>
+<h2>▶️ How to Run</h2>
+<pre>
+chmod +x backup.sh
+./backup.sh
+</pre>
 
-  <script>
-    function copyCode() {
-      const code = document.getElementById('code').innerText;
-      navigator.clipboard.writeText(code);
-      alert('Code copied to clipboard!');
-    }
-  </script>
-
+</div>
 </body>
 </html>
